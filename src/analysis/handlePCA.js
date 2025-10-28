@@ -14,17 +14,39 @@ export async function handlePCA({
       setStatus("QC 먼저 실행 필요");
       return;
     }
+
     await ensureLogCPM(webR, logCPMReadyRef, setStatus);
 
-    await capturePlot(webR, `
+    await capturePlot(
+      webR,
+      `
+      grp <- as.factor(samples[[ "${groupCol}" ]])
+
       pca <- prcomp(t(logCPM))
-      plot(pca$x[,1], pca$x[,2],
-           col=as.factor(samples$${groupCol}),
-           pch=19, xlab="PC1", ylab="PC2",
-           main=paste("PCA by", "${groupCol}"))
-      legend("topright", legend=unique(samples$${groupCol}),
-             col=1:length(unique(samples$${groupCol})), pch=19, bty="n")
-    `, "PCA", setStatus);
+
+      plot(
+        pca$x[,1],
+        pca$x[,2],
+        col=grp,
+        pch=19,
+        xlab="PC1",
+        ylab="PC2",
+        main=paste("PCA by", "${groupCol}")
+      )
+
+      legend(
+        "topright",
+        legend=levels(grp),
+        col=1:length(levels(grp)),
+        pch=19,
+        bty="n"
+      )
+      `,
+      "PCA",
+      setStatus
+    );
+
+    setStatus("PCA 완료");
   } catch (err) {
     setStatus("PCA 오류 " + err.message);
   }

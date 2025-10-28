@@ -30,6 +30,8 @@ export default function GeoMxWebRApp() {
   const [geneKept, setGeneKept] = useState(null);
   const [geneTotal, setGeneTotal] = useState(null);
 
+  const [degGenes, setDegGenes] = useState([]);   // ✅ UI에 출력 목표
+
   const webRRef = useRef(null);
   const qcAppliedRef = useRef({ roi: false, gene: false });
   const logCPMReadyRef = useRef(false);
@@ -96,7 +98,8 @@ export default function GeoMxWebRApp() {
       setStatus,
       groupCol,
       qcAppliedRef,
-      logCPMReadyRef
+      logCPMReadyRef,
+      setDegGenes        
     });
   };
 
@@ -139,12 +142,32 @@ export default function GeoMxWebRApp() {
       <div style={styles.status}>{status}</div>
 
       <PlotDisplay />
+
+      {/*UI: DEG 출력 */}
+      <div style={{ marginTop: 30 }}>
+        <h3>상위 DEG 목록 (Top 30)</h3>
+        {degGenes.length === 0 ? (
+          <div>유의한 DEG 없음</div>
+        ) : (
+          <ul style={{ maxHeight: 200, overflowY: "auto" }}>
+            {degGenes.map((g, idx) => (
+              <li key={idx}>{g}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+
     </div>
   );
 }
 
 const styles = {
-  container: { fontFamily: "Inter, system-ui, Arial", color: "#0f172a", background: "#f8fafc", padding: "20px 16px" },
+  container: {
+    fontFamily: "Inter, system-ui, Arial",
+    color: "#0f172a",
+    background: "#f8fafc",
+    padding: "20px 16px"
+  },
   h1: { margin: "4px 0 6px 0", fontSize: 24, fontWeight: 700 },
   desc: { margin: "0 0 16px 0", color: "#475569" },
   status: { margin: "8px 0 16px 0", fontWeight: 700 },
