@@ -8,7 +8,7 @@ export async function handleDEG({
   groupCol,
   qcAppliedRef,
   logCPMReadyRef,
-  setDegGenes,   // ✅ Top30 UI 전달
+  setDegGenes,
 }) {
   setStatus("DEG 실행 중")
   try {
@@ -62,7 +62,7 @@ export async function handleDEG({
         sig <- (adj < thrFDR) & (abs(logFC) > thrFC)
 
         # =============================
-        # ✅ Top30 DEG 계산
+        # Top30 DEG 계산
         # =============================
         sig_genes <- rownames(logCPM)[sig]
 
@@ -137,7 +137,7 @@ export async function handleDEG({
 
 
     /* =============================
-       3) Heatmap (Top20)
+      3) Heatmap (Top20 + row/col clustering)
     ============================= */
     await capturePlot(
       webR,
@@ -169,20 +169,42 @@ export async function handleDEG({
         topn <- min(20, length(ord))
         genes <- rownames(logCPM)[ord][1:topn]
 
+        ## 1) matrix
         mat <- logCPM[genes, , drop=FALSE]
+
+        ## 2) z-score scaling (gene-wise)
         mat <- t(scale(t(mat)))
 
+        ## 3) row/column distance + clustering
+        row_dist <- dist(mat)
+        row_clust <- hclust(row_dist, method="ward.D2")
+        row_order <- row_clust$order
+
+        col_dist <- dist(t(mat))
+        col_clust <- hclust(col_dist, method="ward.D2")
+        col_order <- col_clust$order
+
+        ## 4) 재정렬
+        mat2 <- mat[row_order, col_order, drop=FALSE]
+        genes_ord <- rownames(mat2)
+        samples_ord <- samples$SegmentDisplayName[col_order]
+
+        ## 5) heatmap
         image(
-          x=1:ncol(mat),
-          y=1:nrow(mat),
-          z=t(mat[nrow(mat):1,]),
+          x=1:ncol(mat2),
+          y=1:nrow(mat2),
+          z=t(mat2[nrow(mat2):1,]),
           col=colorRampPalette(c("blue","white","red"))(50),
           axes=FALSE,
           main=paste("Top 20 DEG Heatmap","${groupCol}")
         )
 
-        axis(1, at=1:ncol(mat), labels=samples$SegmentDisplayName, las=2, cex.axis=0.6)
-        axis(2, at=1:nrow(mat), labels=rev(genes), las=2, cex.axis=0.7)
+        # x축
+        axis(1, at=1:ncol(mat2), labels=samples_ord, las=2, cex.axis=0.6)
+
+        # y축
+        axis(2, at=1:nrow(mat2), labels=rev(genes_ord), las=2, cex.axis=0.7)
+
         box()
 
       } else {

@@ -4,10 +4,10 @@ export async function initWebR(setStatus) {
   try {
     const webR = new WebR({ interactive: false });
     await webR.init();
-    setStatus("webR 초기화 완료");
+    setStatus("WebR 초기화 완료");
     return webR;
   } catch (err) {
-    setStatus("webR 초기화 실패 " + err.message);
+    setStatus("WebR 초기화 실패 " + err.message);
     throw err;
   }
 }

@@ -115,8 +115,7 @@ export default function GeoMxWebRApp() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.h1}>GeoMx DSP Analysis Web Tool</h1>
-      <p style={styles.desc}>클라이언트 중심의 실시간 분석 환경을 제공합니다.</p>
+      <h1 style={styles.h1}>WebR 기반 클라이언트 중심의 GeoMx DSP 데이터 분석 프레임워크 </h1>
 
       <FileUploader files={files} setFiles={setFiles} onUpload={onUpload} />
 
@@ -145,7 +144,7 @@ export default function GeoMxWebRApp() {
 
       {/*UI: DEG 출력 */}
       <div style={{ marginTop: 30 }}>
-        <h3>상위 DEG 목록 (Top 30)</h3>
+        <h3>Top 30 DEG 목록</h3>
         {degGenes.length === 0 ? (
           <div>유의한 DEG 없음</div>
         ) : (
