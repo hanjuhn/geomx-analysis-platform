@@ -19,15 +19,15 @@ export default function AnalysisButtons({
           <div>ROI kept {roiKept ?? "-"} / {roiTotal ?? "-"}</div>
           <div>Gene kept {geneKept ?? "-"} / {geneTotal ?? "-"}</div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onROIQC} style={styles.btn}>ROI QC</button>
-          <button onClick={onGeneQC} style={styles.btn}>Gene QC</button>
-          <button onClick={onPCA} style={styles.btn}>PCA</button>
-          <button onClick={onDEG} style={styles.btn}>DEG</button>
-          <button onClick={onSsGSEA} style={styles.btn}>ssGSEA Heatmap</button>
-          <button onClick={onPathCorr} style={styles.btn}>Pathway Corr</button>
-          <button onClick={onORABar} style={styles.btn}>ORA Bar</button>
-          <button onClick={onML} style={styles.btn}>ML Classification</button>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button onClick={onROIQC} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>ROI QC</button>
+          <button onClick={onGeneQC} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>Gene QC</button>
+          <button onClick={onPCA} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>PCA</button>
+          <button onClick={onDEG} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>DEG</button>
+          <button onClick={onSsGSEA} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>ssGSEA Heatmap</button>
+          <button onClick={onPathCorr} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>Pathway Corr</button>
+          <button onClick={onORABar} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>ORA Bar</button>
+          <button onClick={onML} style={styles.btn} onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"} onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}>ML Classification</button>
         </div>
       </div>
     </div>
@@ -35,10 +35,61 @@ export default function AnalysisButtons({
 }
 
 const styles = {
-  card: { background: "white", border: "1px solid #e2e8f0", borderRadius: 10, padding: 12, marginBottom: 12 },
-  row: { display: "flex", gap: 14, alignItems: "end", flexWrap: "wrap" },
-  label: { fontSize: 12, color: "#64748b", marginBottom: 4 },
-  select: { padding: "6px 8px", borderRadius: 8, border: "1px solid #cbd5e1", background: "white" },
-  btn: { background: "#0ea5e9", color: "white", border: "none", padding: "8px 12px", borderRadius: 8, cursor: "pointer" },
-  metrics: { display: "flex", gap: 16, alignItems: "center", color: "#334155", fontWeight: 600 },
+  card: {
+    background: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    boxShadow: "0 8px 16px -4px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.05)"
+  },
+  row: {
+    display: "flex",
+    gap: 16,
+    alignItems: "end",
+    flexWrap: "wrap"
+  },
+  label: {
+    fontSize: 13,
+    color: "#475569",
+    marginBottom: 6,
+    fontWeight: 500
+  },
+  select: {
+    padding: "8px 12px",
+    borderRadius: 10,
+    border: "1px solid rgba(203, 213, 225, 0.6)",
+    background: "rgba(255, 255, 255, 0.8)",
+    fontSize: 14,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    outline: "none",
+    minWidth: 150
+  },
+  btn: {
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    color: "white",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: 10,
+    cursor: "pointer",
+    fontWeight: 600,
+    fontSize: 13,
+    boxShadow: "0 4px 6px -1px rgba(102, 126, 234, 0.3)",
+    transition: "all 0.2s ease",
+    whiteSpace: "nowrap"
+  },
+  metrics: {
+    display: "flex",
+    gap: 20,
+    alignItems: "center",
+    color: "#334155",
+    fontWeight: 600,
+    fontSize: 14,
+    padding: "8px 16px",
+    background: "rgba(241, 245, 249, 0.8)",
+    borderRadius: 10,
+    border: "1px solid rgba(203, 213, 225, 0.3)"
+  },
 };

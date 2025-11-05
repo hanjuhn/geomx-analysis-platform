@@ -20,13 +20,21 @@ export default function QCControls({
 
 function QCInput({ label, value, onChange, ...rest }) {
   return (
-    <div>
+    <div style={styles.inputWrapper}>
       <div style={styles.label}>{label}</div>
       <input
         type="number"
         value={value}
         onChange={e => onChange(parseFloat(e.target.value))}
         style={styles.input}
+        onFocus={(e) => {
+          e.target.style.borderColor = "#667eea";
+          e.target.style.boxShadow = "0 0 0 3px rgba(102, 126, 234, 0.1)";
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = "rgba(203, 213, 225, 0.6)";
+          e.target.style.boxShadow = "none";
+        }}
         {...rest}
       />
     </div>
@@ -34,8 +42,40 @@ function QCInput({ label, value, onChange, ...rest }) {
 }
 
 const styles = {
-  card: { background: "white", border: "1px solid #e2e8f0", borderRadius: 10, padding: 12, marginBottom: 12 },
-  row: { display: "flex", gap: 14, alignItems: "end", flexWrap: "wrap" },
-  label: { fontSize: 12, color: "#64748b", marginBottom: 4 },
-  input: { padding: "6px 8px", borderRadius: 8, border: "1px solid #cbd5e1", width: 100 },
+  card: {
+    background: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 32,
+    boxShadow: "0 8px 16px -4px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.05)"
+  },
+  row: {
+    display: "flex",
+    gap: 16,
+    alignItems: "end",
+    flexWrap: "wrap"
+  },
+  label: {
+    fontSize: 13,
+    color: "#475569",
+    marginBottom: 6,
+    fontWeight: 500
+  },
+  inputWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4
+  },
+  input: {
+    padding: "8px 12px",
+    borderRadius: 10,
+    border: "1px solid rgba(203, 213, 225, 0.6)",
+    width: 120,
+    background: "rgba(255, 255, 255, 0.8)",
+    fontSize: 14,
+    transition: "all 0.2s ease",
+    outline: "none"
+  },
 };

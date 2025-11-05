@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./GeoMxWebRApp.css";
 import FileUploader from "./components/FileUploader";
 import QCControls from "./components/QCControls";
 import AnalysisButtons from "./components/AnalysisButtons";
@@ -33,7 +34,7 @@ export default function GeoMxWebRApp() {
   const [geneKept, setGeneKept] = useState(null);
   const [geneTotal, setGeneTotal] = useState(null);
 
-  const [degGenes, setDegGenes] = useState([]);   // ✅ UI에 출력 목표
+  const [degGenes, setDegGenes] = useState([]);
   const [gmtText, setGmtText] = useState("");   // WikiPathways GMT 텍스트 저장
   const defaultGmtLibrary = "WikiPathways";
 
@@ -167,65 +168,65 @@ export default function GeoMxWebRApp() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.h1}>WebR 기반 클라이언트 중심의 GeoMx DSP 데이터 분석 프레임워크 </h1>
+    <div className="container">
+      {/* Header with Logo */}
+      <header className="header">
+        <div className="headerContent">
+          <img src="/image/logo.png" alt="Logo" className="logo" />
+          <div className="headerText">
+            <h1>클라이언트 기반 GeoMx DSP 데이터 분석 프레임워크</h1>
+          </div>
+        </div>
+      </header>
 
-      <FileUploader files={files} setFiles={setFiles} onUpload={onUpload} />
-
-      <QCControls
-        roiThreshold={roiThreshold} setRoiThreshold={setRoiThreshold}
-        minCount={minCount} setMinCount={setMinCount}
-        sampleFraction={sampleFraction} setSampleFraction={setSampleFraction}
-        detectFraction={detectFraction} setDetectFraction={setDetectFraction}
-      />
-
-      <AnalysisButtons
-        groupCol={groupCol} setGroupCol={setGroupCol}
-        columns={columns}
-        roiKept={roiKept} roiTotal={roiTotal}
-        geneKept={geneKept} geneTotal={geneTotal}
-        onROIQC={onROIQC}
-        onGeneQC={onGeneQC}
-        onPCA={onPCA}
-        onDEG={onDEG}
-        onSsGSEA={onSsGSEA}
-        onPathCorr={onPathCorr}
-        onORABar={onORABar}
-        onML={onML}
-      />
-
-      <div style={styles.status}>{status}</div>
-
-      <PlotDisplay />
-
-      {/* 자동 GMT 로드: UI 제거됨. 필요 시 onSsGSEA/onPathCorr에서 기본 라이브러리로 자동 로드 */}
-
-      {/*UI: DEG 출력 */}
-      <div style={{ marginTop: 30 }}>
-        <h3>Top 30 DEG 목록</h3>
-        {degGenes.length === 0 ? (
-          <div>유의한 DEG 없음</div>
-        ) : (
-          <ul style={{ maxHeight: 200, overflowY: "auto" }}>
-            {degGenes.map((g, idx) => (
-              <li key={idx}>{g}</li>
-            ))}
-          </ul>
-        )}
+      {/* Status Banner */}
+      <div className="statusBanner">
+        <div className="statusIcon">📊</div>
+        <div className="status">{status}</div>
       </div>
 
+      {/* Main Content */}
+      <div className="mainContent">
+        <FileUploader files={files} setFiles={setFiles} onUpload={onUpload} />
+
+        <QCControls
+          roiThreshold={roiThreshold} setRoiThreshold={setRoiThreshold}
+          minCount={minCount} setMinCount={setMinCount}
+          sampleFraction={sampleFraction} setSampleFraction={setSampleFraction}
+          detectFraction={detectFraction} setDetectFraction={setDetectFraction}
+        />
+
+        <AnalysisButtons
+          groupCol={groupCol} setGroupCol={setGroupCol}
+          columns={columns}
+          roiKept={roiKept} roiTotal={roiTotal}
+          geneKept={geneKept} geneTotal={geneTotal}
+          onROIQC={onROIQC}
+          onGeneQC={onGeneQC}
+          onPCA={onPCA}
+          onDEG={onDEG}
+          onSsGSEA={onSsGSEA}
+          onPathCorr={onPathCorr}
+          onORABar={onORABar}
+          onML={onML}
+        />
+
+        <PlotDisplay />
+
+        {/* DEG 출력 */}
+        <div className="degSection">
+          <h3 className="sectionTitle">Top 30 DEG 목록</h3>
+          {degGenes.length === 0 ? (
+            <div className="emptyState">유의한 DEG 없음</div>
+          ) : (
+            <ul className="degList">
+              {degGenes.map((g, idx) => (
+                <li key={idx} className="degItem">{g}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    fontFamily: "Inter, system-ui, Arial",
-    color: "#0f172a",
-    background: "#f8fafc",
-    padding: "20px 16px"
-  },
-  h1: { margin: "4px 0 6px 0", fontSize: 24, fontWeight: 700 },
-  desc: { margin: "0 0 16px 0", color: "#475569" },
-  status: { margin: "8px 0 16px 0", fontWeight: 700 },
-};
