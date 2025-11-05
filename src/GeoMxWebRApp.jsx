@@ -12,6 +12,9 @@ import { handleGeneQC } from "./analysis/handleGeneQC";
 import { handlePCA } from "./analysis/handlePCA";
 import { handleDEG } from "./analysis/handleDEG";
 import { handleML } from "./analysis/handleML";
+import { handleSsGSEA, handlePathwayCorr, handleORABar } from "./analysis/handlePathway";
+import { exportExprCsv, ensurePyodideReady, getDegGenesSafe } from "./core/pathwayUtils";
+import usePyodide from "./core/usePyodide";
 
 export default function GeoMxWebRApp() {
   const [status, setStatus] = useState("webR 초기화 중");
@@ -31,10 +34,14 @@ export default function GeoMxWebRApp() {
   const [geneTotal, setGeneTotal] = useState(null);
 
   const [degGenes, setDegGenes] = useState([]);   // ✅ UI에 출력 목표
+  const [gmtText, setGmtText] = useState("");   // WikiPathways GMT 텍스트 저장
+  const defaultGmtLibrary = "WikiPathways";
 
   const webRRef = useRef(null);
   const qcAppliedRef = useRef({ roi: false, gene: false });
   const logCPMReadyRef = useRef(false);
+
+  const pyodide = usePyodide();
 
   useEffect(() => {
     (async () => {
@@ -99,7 +106,8 @@ export default function GeoMxWebRApp() {
       groupCol,
       qcAppliedRef,
       logCPMReadyRef,
-      setDegGenes        
+      setDegGenes,
+      pyodide
     });
   };
 
@@ -110,6 +118,51 @@ export default function GeoMxWebRApp() {
       groupCol,
       qcAppliedRef,
       logCPMReadyRef
+    });
+  };
+
+  const onSsGSEA = async () => {
+    await handleSsGSEA({
+      webR: webRRef.current,
+      setStatus,
+      groupCol,
+      qcAppliedRef,
+      logCPMReadyRef,
+      pyodide,
+      gmtText,
+      setGmtText,
+      defaultGmtLibrary,
+      ensurePyodideReady: () => ensurePyodideReady(pyodide),
+      exportExprCsv: (genes) => exportExprCsv(webRRef.current, genes)
+    });
+  };
+
+  const onPathCorr = async () => {
+    await handlePathwayCorr({
+      webR: webRRef.current,
+      setStatus,
+      groupCol,
+      qcAppliedRef,
+      logCPMReadyRef,
+      pyodide,
+      gmtText,
+      setGmtText,
+      defaultGmtLibrary,
+      ensurePyodideReady: () => ensurePyodideReady(pyodide),
+      exportExprCsv: (genes) => exportExprCsv(webRRef.current, genes),
+      getDegGenesSafe: () => getDegGenesSafe(webRRef.current, degGenes)
+    });
+  };
+
+  const onORABar = async () => {
+    await handleORABar({
+      webR: webRRef.current,
+      setStatus,
+      pyodide,
+      gmtText,
+      setGmtText,
+      defaultGmtLibrary,
+      ensurePyodideReady: () => ensurePyodideReady(pyodide)
     });
   };
 
@@ -135,12 +188,17 @@ export default function GeoMxWebRApp() {
         onGeneQC={onGeneQC}
         onPCA={onPCA}
         onDEG={onDEG}
+        onSsGSEA={onSsGSEA}
+        onPathCorr={onPathCorr}
+        onORABar={onORABar}
         onML={onML}
       />
 
       <div style={styles.status}>{status}</div>
 
       <PlotDisplay />
+
+      {/* 자동 GMT 로드: UI 제거됨. 필요 시 onSsGSEA/onPathCorr에서 기본 라이브러리로 자동 로드 */}
 
       {/*UI: DEG 출력 */}
       <div style={{ marginTop: 30 }}>

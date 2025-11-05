@@ -3,7 +3,8 @@ import React from "react";
 export default function AnalysisButtons({
   groupCol, setGroupCol, columns,
   roiKept, roiTotal, geneKept, geneTotal,
-  onROIQC, onGeneQC, onPCA, onDEG, onML
+  onROIQC, onGeneQC, onPCA, onDEG, onML,
+  onSsGSEA, onPathCorr, onORABar
 }) {
   return (
     <div style={styles.card}>
@@ -23,6 +24,9 @@ export default function AnalysisButtons({
           <button onClick={onGeneQC} style={styles.btn}>Gene QC</button>
           <button onClick={onPCA} style={styles.btn}>PCA</button>
           <button onClick={onDEG} style={styles.btn}>DEG</button>
+          <button onClick={onSsGSEA} style={styles.btn}>ssGSEA Heatmap</button>
+          <button onClick={onPathCorr} style={styles.btn}>Pathway Corr</button>
+          <button onClick={onORABar} style={styles.btn}>ORA Bar</button>
           <button onClick={onML} style={styles.btn}>ML Classification</button>
         </div>
       </div>

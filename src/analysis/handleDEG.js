@@ -9,35 +9,29 @@ export async function handleDEG({
   qcAppliedRef,
   logCPMReadyRef,
   setDegGenes,
+  pyodide,
 }) {
   setStatus("DEG 실행 중")
   try {
-    // QC 체크
     if (!qcAppliedRef.current.roi || !qcAppliedRef.current.gene) {
       setStatus("QC 먼저 실행 필요")
       return
     }
 
-    // logCPM 생성 보장
     await ensureLogCPM(webR, logCPMReadyRef, setStatus)
 
-    /* =============================
-       1) Volcano
-    ============================= */
-    await capturePlot(
-      webR,
-      `
+    // 계산만 수행 (R volcano 그리기는 생략)
+    await evalRToString(webR, `
       g <- as.factor(samples[[ "${groupCol}" ]])
       if (length(unique(g)) < 2) {
-        plot.new(); text(0.5,0.5,"그룹이 두 개 미만",cex=1.4)
+        assign("txt_wilcox_csv", "", envir=.GlobalEnv)
       } else {
+
         lv <- levels(g)
 
-        # 디자인 매트릭스
         design <- model.matrix(~ 0 + g)
         colnames(design) <- lv
 
-        # 선형 적합
         fit <- lm.fit(design, t(logCPM))
         coef <- t(fit$coefficients)
 
@@ -45,75 +39,99 @@ export async function handleDEG({
         logFC <- coef %*% contrast
         rownames(logFC) <- rownames(logCPM)
 
-        # 분산
         resid <- t(logCPM) - fit$fitted.values
         s2 <- apply(resid,2,var)
         s2_pooled <- mean(s2)
         df <- ncol(logCPM) - ncol(design)
 
-        # 통계값
         tstat <- logFC / sqrt(s2_pooled / length(g))
         pval <- 2 * pt(-abs(tstat), df=df)
         adj <- p.adjust(pval, method="BH")
 
-        # 기준
         thrFC <- 1
         thrFDR <- 0.05
         sig <- (adj < thrFDR) & (abs(logFC) > thrFC)
 
-        # =============================
-        # Top30 DEG 계산
-        # =============================
         sig_genes <- rownames(logCPM)[sig]
 
         if (length(sig_genes) > 0) {
-
           df_sig <- data.frame(
             gene = sig_genes,
             adj = adj[sig],
             logFC = logFC[sig],
             stringsAsFactors = FALSE
           )
-
-          # adj 기준 정렬
           df_sig <- df_sig[order(df_sig$adj), ]
-
           topn <- min(30, nrow(df_sig))
           top30 <- df_sig$gene[1:topn]
-
           assign("top30_genes", top30, envir=.GlobalEnv)
-
-          cat("---- Top 30 Significant DEG ----\\n")
-          print(top30)
-
         } else {
           assign("top30_genes", character(0), envir=.GlobalEnv)
-          cat("유의한 DEG 없음\\n")
         }
 
-        # volcano
-        plot(
-          x=logFC,
-          y=-log10(adj),
-          pch=19,
-          cex=0.55,
-          col=ifelse(sig,"red","grey"),
-          xlab="log2 Fold Change",
-          ylab="-log10(FDR)",
-          main=paste("Volcano Plot","${groupCol}",lv[1],"vs",lv[2])
+        ## ======================
+        ## Wilcoxon
+        ## ======================
+        wil_p <- rep(NA_real_, nrow(logCPM))
+        g1_idx <- which(g == lv[1])
+        g2_idx <- which(g == lv[2])
+
+        for (i in 1:nrow(logCPM)) {
+          x1 <- as.numeric(logCPM[i, g1_idx])
+          x2 <- as.numeric(logCPM[i, g2_idx])
+
+          x1 <- x1[is.finite(x1)]
+          x2 <- x2[is.finite(x2)]
+
+          if (length(x1) < 1 || length(x2) < 1) {
+            wil_p[i] <- NA_real_
+            next
+          }
+
+          if (length(unique(c(x1, x2))) <= 1) {
+            wil_p[i] <- 1.0
+            next
+          }
+
+          tmp <- try(
+            suppressWarnings(
+              wilcox.test(x1, x2, alternative="two.sided", exact=FALSE, correct=TRUE)
+            ),
+            silent=TRUE
+          )
+
+          if (inherits(tmp, "try-error") || is.null(tmp$p.value) || !is.finite(tmp$p.value)) {
+            wil_p[i] <- 1.0
+          } else {
+            wil_p[i] <- tmp$p.value
+          }
+        }
+
+        wil_adj <- p.adjust(wil_p, method="BH")
+
+        negLog10p <- rep(NA_real_, length(wil_p))
+        ok <- which(is.finite(wil_p) & wil_p > 0)
+        negLog10p[ok] <- -log10(wil_p[ok])
+
+        deg_wilcox_df <- data.frame(
+          gene = rownames(logCPM),
+          logFC = as.numeric(logFC),
+          wil_p = wil_p,
+          wil_FDR = wil_adj,
+          negLog10p = negLog10p,
+          row.names=NULL
         )
-        abline(v=c(-thrFC,thrFC), col="blue", lty=2)
-        abline(h=-log10(thrFDR), col="blue", lty=2)
+
+        txt_wilcox_csv <- paste(
+          paste(colnames(deg_wilcox_df), collapse=","),
+          paste(apply(deg_wilcox_df,1,paste,collapse=","),collapse="\n"),
+          sep="\n"
+        )
+        assign("txt_wilcox_csv", txt_wilcox_csv, envir=.GlobalEnv)
       }
-      `,
-      "DEG_Volcano",
-      setStatus
-    )
+    `)
 
 
-    /* =============================
-      JS 로 Top30 가져오기
-    ============================= */
     let top30List = []
     try {
       const out = await evalRToString(webR, `
@@ -127,32 +145,59 @@ export async function handleDEG({
       if (out && out.trim().length > 0) {
         top30List = out.trim().split("\n")
       }
-    } catch (e) {
-      console.log("top30_genes 불러오기 실패", e)
-    }
+    } catch (e) {}
 
     if (setDegGenes) {
       setDegGenes(top30List)
     }
 
+      try {
+      const csvText = await evalRToString(webR, `
+        if (exists("txt_wilcox_csv")) txt_wilcox_csv else ""
+      `)
 
-    /* =============================
-      3) Heatmap (Top20 + row/col clustering)
-    ============================= */
-    await capturePlot(
-      webR,
-      `
+      if (csvText && csvText.trim().length > 0) {
+        const waitReady = async () => {
+          const start = Date.now()
+          while (!pyodide?.ready && Date.now() - start < 3000) {
+            await new Promise(r => setTimeout(r, 100))
+          }
+          return !!pyodide?.ready
+        }
+
+        const isReady = await waitReady()
+        if (isReady) {
+          await pyodide.setData(csvText.trim())
+          try {
+            const b64 = await pyodide.plotVolcano()
+            const el = document.getElementById(`plot_DEG_Volcano`)
+            if (el) {
+              el.innerHTML = `<img src="data:image/png;base64,${b64}" style="max-width:860px;border:1px solid #ddd;border-radius:6px;margin:14px 0"/>`
+            }
+          } catch (e) {
+            console.error("Pyodide volcano error", e)
+          }
+        }
+      }
+
+    } catch (e) {
+      // 에러 처리
+      console.error("txt_wilcox_csv 전달 오류", e)
+    }
+
+
+    // Heatmap용 CSV 생성 (정렬/표준화 및 라벨 순서 포함)
+    const heatmapCsv = await evalRToString(webR, `
       g <- as.factor(samples[[ "${groupCol}" ]])
-
-      if (length(unique(g)) >= 2) {
-
+      if (length(unique(g)) < 2) {
+        ""
+      } else {
         lv <- levels(g)
         design <- model.matrix(~ 0 + g)
         colnames(design) <- lv
 
         fit <- lm.fit(design, t(logCPM))
         coef <- t(fit$coefficients)
-
         contrast <- c(-1,1)
         logFC <- coef %*% contrast
 
@@ -160,7 +205,6 @@ export async function handleDEG({
         s2 <- apply(resid,2,var)
         s2_pooled <- mean(s2)
         df <- ncol(logCPM) - ncol(design)
-
         tstat <- logFC / sqrt(s2_pooled / length(g))
         pval <- 2 * pt(-abs(tstat), df=df)
         adj <- p.adjust(pval, method="BH")
@@ -169,13 +213,9 @@ export async function handleDEG({
         topn <- min(20, length(ord))
         genes <- rownames(logCPM)[ord][1:topn]
 
-        ## 1) matrix
         mat <- logCPM[genes, , drop=FALSE]
-
-        ## 2) z-score scaling (gene-wise)
         mat <- t(scale(t(mat)))
 
-        ## 3) row/column distance + clustering
         row_dist <- dist(mat)
         row_clust <- hclust(row_dist, method="ward.D2")
         row_order <- row_clust$order
@@ -184,36 +224,39 @@ export async function handleDEG({
         col_clust <- hclust(col_dist, method="ward.D2")
         col_order <- col_clust$order
 
-        ## 4) 재정렬
         mat2 <- mat[row_order, col_order, drop=FALSE]
         genes_ord <- rownames(mat2)
         samples_ord <- samples$SegmentDisplayName[col_order]
 
-        ## 5) heatmap
-        image(
-          x=1:ncol(mat2),
-          y=1:nrow(mat2),
-          z=t(mat2[nrow(mat2):1,]),
-          col=colorRampPalette(c("blue","white","red"))(50),
-          axes=FALSE,
-          main=paste("Top 20 DEG Heatmap","${groupCol}")
-        )
-
-        # x축
-        axis(1, at=1:ncol(mat2), labels=samples_ord, las=2, cex.axis=0.6)
-
-        # y축
-        axis(2, at=1:nrow(mat2), labels=rev(genes_ord), las=2, cex.axis=0.7)
-
-        box()
-
-      } else {
-        plot.new(); text(0.5,0.5,"그룹이 두 개 미만",cex=1.4)
+        header <- paste(c("gene", samples_ord), collapse=",")
+        body <- apply(mat2, 1, function(r) paste(format(r, trim=TRUE, scientific=FALSE), collapse=","))
+        rows <- paste(genes_ord, body, sep=",")
+        paste(header, paste(rows, collapse="\n"), sep="\n")
       }
-      `,
-      "DEG_Heatmap",
-      setStatus
-    )
+    `)
+
+    if (heatmapCsv && heatmapCsv.trim().length > 0) {
+      const waitReady2 = async () => {
+        const start = Date.now()
+        while (!pyodide?.ready && Date.now() - start < 3000) {
+          await new Promise(r => setTimeout(r, 100))
+        }
+        return !!pyodide?.ready
+      }
+      const ok = await waitReady2()
+      if (ok) {
+        await pyodide.setHeatmap(heatmapCsv.trim())
+        try {
+          const b64hm = await pyodide.plotHeatmap()
+          const elhm = document.getElementById(`plot_DEG_Heatmap`)
+          if (elhm) {
+            elhm.innerHTML = `<img src="data:image/png;base64,${b64hm}" style="max-width:860px;border:1px solid #ddd;border-radius:6px;margin:14px 0"/>`
+          }
+        } catch (e) {
+          console.error("Pyodide heatmap error", e)
+        }
+      }
+    }
 
     setStatus("DEG 완료")
 

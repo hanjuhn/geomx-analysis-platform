@@ -7,6 +7,9 @@ export default function PlotDisplay() {
     { id: "PCA", title: "PCA" },
     { id: "DEG_Volcano", title: "DEG Volcano" },
     { id: "DEG_Heatmap", title: "DEG Heatmap" },
+    { id: "SSGSEA_Heatmap", title: "ssGSEA Heatmap" },
+    { id: "Pathway_Corr", title: "Pathway Spearman Corr" },
+    { id: "ORA_Bar", title: "ORA Enrichment Bar" },
     { id: "ML_RF", title: "ML Confusion Matrix" }
   ];
   return (
