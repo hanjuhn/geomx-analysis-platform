@@ -14,7 +14,7 @@ import { handlePCA } from "./analysis/handlePCA";
 import { handleDEG } from "./analysis/handleDEG";
 import { handleML } from "./analysis/handleML";
 import { handleSsGSEA, handlePathwayCorr, handleORABar } from "./analysis/handlePathway";
-import { exportExprCsv, ensurePyodideReady, getDegGenesSafe } from "./core/pathwayUtils";
+import { exportExprCsv, ensurePyodideReady, getDegGenesSafe } from "./utils/pathwayUtils";
 import usePyodide from "./core/usePyodide";
 
 export default function GeoMxWebRApp() {
