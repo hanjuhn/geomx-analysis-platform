@@ -181,7 +181,6 @@ export default function GeoMxWebRApp() {
 
       {/* Status Banner */}
       <div className="statusBanner">
-        <div className="statusIcon">📊</div>
         <div className="status">{status}</div>
       </div>
 
