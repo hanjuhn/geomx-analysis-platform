@@ -7,7 +7,10 @@ export default function usePyodide() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const w = new Worker("/pyodide/worker.js");
+    // GitHub Pages를 위한 base URL 처리
+    const baseUrl = import.meta.env.BASE_URL;
+    const workerUrl = new URL(`${baseUrl}pyodide/worker.js`, import.meta.url).href;
+    const w = new Worker(workerUrl);
     workerRef.current = w;
 
     w.onmessage = (e) => {

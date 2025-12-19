@@ -1,14 +1,20 @@
 // worker.js
-importScripts(
-    "/pyodide/packages.js",
-    "/pyodide/dataStore.js",
-    "/pyodide/gmtFetch.js",
-    "/pyodide/volcano.js",
-    "/pyodide/heatmap.js",
-    "/pyodide/ssGSEA.js",
-    "/pyodide/corr.js",
-    "/pyodide/enrichBar.js"
-  )
+// GitHub Pages를 위한 base URL 처리
+// worker.js의 경로에서 base URL 추출
+const workerPath = self.location.pathname;
+const basePath = workerPath.substring(0, workerPath.lastIndexOf('/pyodide/') + 1);
+const scripts = [
+    "packages.js",
+    "dataStore.js",
+    "gmtFetch.js",
+    "volcano.js",
+    "heatmap.js",
+    "ssGSEA.js",
+    "corr.js",
+    "enrichBar.js"
+].map(script => new URL(`${basePath}pyodide/${script}`, self.location.href).href);
+
+importScripts(...scripts)
   
   let isReady = false
   

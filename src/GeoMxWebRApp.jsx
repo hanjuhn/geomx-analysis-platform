@@ -172,7 +172,7 @@ export default function GeoMxWebRApp() {
       {/* Header with Logo */}
       <header className="header">
         <div className="headerContent">
-          <img src="/image/logo.png" alt="Logo" className="logo" />
+          <img src={`${import.meta.env.BASE_URL}image/logo.png`} alt="Logo" className="logo" />
           <div className="headerText">
             <h1>클라이언트 기반 GeoMx DSP 공간 전사체 데이터 분석 플랫폼</h1>
           </div>
