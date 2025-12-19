@@ -9,7 +9,11 @@ export default function usePyodide() {
   useEffect(() => {
     // GitHub Pages를 위한 base URL 처리
     const baseUrl = import.meta.env.BASE_URL;
-    const workerUrl = new URL(`${baseUrl}pyodide/worker.js`, import.meta.url).href;
+    // 절대 URL 생성 (window.location.origin 사용)
+    const workerPath = `${baseUrl}pyodide/worker.js`;
+    const workerUrl = workerPath.startsWith('/') 
+      ? `${window.location.origin}${workerPath}`
+      : new URL(workerPath, window.location.href).href;
     const w = new Worker(workerUrl);
     workerRef.current = w;
 

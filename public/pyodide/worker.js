@@ -2,7 +2,14 @@
 // GitHub Pages를 위한 base URL 처리
 // worker.js의 경로에서 base URL 추출
 const workerPath = self.location.pathname;
-const basePath = workerPath.substring(0, workerPath.lastIndexOf('/pyodide/') + 1);
+// /pyodide/worker.js 또는 /geomx-analysis-platform/pyodide/worker.js 형태
+let basePath = '/';
+if (workerPath.includes('/pyodide/')) {
+  basePath = workerPath.substring(0, workerPath.lastIndexOf('/pyodide/') + 1);
+} else if (workerPath.endsWith('worker.js')) {
+  // worker.js가 루트에 있는 경우
+  basePath = workerPath.substring(0, workerPath.lastIndexOf('/') + 1);
+}
 const scripts = [
     "packages.js",
     "dataStore.js",
@@ -12,7 +19,10 @@ const scripts = [
     "ssGSEA.js",
     "corr.js",
     "enrichBar.js"
-].map(script => new URL(`${basePath}pyodide/${script}`, self.location.href).href);
+].map(script => {
+  const scriptPath = `${basePath}pyodide/${script}`;
+  return new URL(scriptPath, self.location.origin + '/').href;
+});
 
 importScripts(...scripts)
   
