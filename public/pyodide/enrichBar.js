@@ -171,17 +171,18 @@ function handleEnrichBarMessage(event) {
       
       top = res.head(min(15, len(res))).copy()
       top['neglog10_adjP'] = -np.log10(top['Adjusted P-value'].astype(float) + 1e-300)
+      top = top.sort_values('neglog10_adjP', ascending=False)  # 큰 값부터 정렬
       
       y_pos = np.arange(len(top))
       ax.barh(
           y_pos,
-          top['neglog10_adjP'][::-1],
+          top['neglog10_adjP'],
           color='#a6cee3',
           edgecolor='black'
       )
       
       ax.set_yticks(y_pos)
-      ax.set_yticklabels(top['Term'][::-1], fontsize=8)
+      ax.set_yticklabels(top['Term'], fontsize=8)
       ax.set_xlabel('-log10(Adjusted P-value)', fontsize=9)
       ax.set_ylabel('Term', fontsize=9)
       ax.set_title(title, fontsize=11, pad=10)

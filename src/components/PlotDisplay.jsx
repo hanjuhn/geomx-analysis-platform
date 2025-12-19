@@ -18,7 +18,7 @@ export default function PlotDisplay() {
       {sections.map(s => (
         <div key={s.id} style={styles.section}>
           <div style={styles.sectionHeader}>
-            <h3 style={styles.h3}>{s.title}</h3>
+          <h3 style={styles.h3}>{s.title}</h3>
           </div>
           <div id={`plot_${s.id}`} style={styles.plotContainer}></div>
         </div>
