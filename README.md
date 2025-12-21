@@ -17,7 +17,7 @@
 - 본 연구에서는 WebAssembly [2] 기반 실행 환경인 WebR과 Pyodide를 활용하여 브라우저에서 GeoMx DSP 데이터를 실시간으로 분석할 수 있는 클라이언트 기반의 분석 플랫폼을 제안함.
 - React와 WebR은 메인 스레드에서 동작하여 각각 사용자 인터페이스를 렌더링하고 R을 실행함. Web Worker는 백그라운드에서 Pyodide를 실행하여 R과 Python을 병렬로 처리할 수 있는 구조임.
 
-<img src="https://github.com/user-attachments/assets/ca6acf63-85cc-401c-a407-1d90a7dbe9e6" width="600">
+<img src="https://github.com/user-attachments/assets/ed4b92d0-d05e-47ce-af07-0409668a543c" width="600">
 
 ### 데이터 분석 과정
 
@@ -29,7 +29,11 @@
 - Pathway 기반 분석은 차등 발현 유전자에 대해 WikiPathways 데이터베이스를 이용하여 ORA(Over-representation Analysis)를 수행함.
 - 머신러닝 분류 분석은 Random Forest [6] 모델을 사용하여 각 ROI의 그룹을 예측함. 발현 차이가 유의한 차등 발현 유전자만을 입력 특징으로 활용하고 이를 Train Data 70%와 Test Data 30%로 분할하여 학습함.
 
-<img src="https://github.com/user-attachments/assets/313037fc-6cf5-4edf-85be-9d854d937c59" width="700">
+<img src="https://github.com/user-attachments/assets/08841a8a-d7c6-452d-a311-9e5e5fe0de9f" width="700">
+
+### 실행 화면
+
+<img src="https://github.com/user-attachments/assets/c1bb2257-7efb-46ca-831a-096b56d529b9" width="700">
 
 ---
 
@@ -45,7 +49,7 @@
 - 차원 축소 결과의 경우 저차원 공간에서의 분포 형태 및 군집 양상이 선행 연구 결과 [7]와 동일하게 재현됨.
 - 차등 발현 유전자 분석에서도 높은 수준의 일관성이 확인됨. 선행 연구 결과 [7]에서 보고된 상위 20개의 차등 발현 유전자 중 17개가 동일하게 선정되었으며 Volcano Plot에서의 분포 패턴 역시 매우 유사하게 나타남.
 
-<img src="https://github.com/user-attachments/assets/b00735bc-fed5-4676-bd54-7643ddc68ea3" width="600">
+<img src="https://github.com/user-attachments/assets/7616e459-1df6-4138-8ce7-2a0bfb67e421" width="600">
 
 ### ORA 기반 Pathway Enrichment 분석 결과
 
@@ -53,7 +57,7 @@
 - PanCK+ 영역에서는 Alpha 6 Beta 4 Integrin Signaling 및 Focal Adhesion이 두드러졌으며 Vimentin+ 영역에서도 Focal Adhesion이 유의하게 강화되어 있었음. 선행 연구 결과 [7]에서도 상피 영역과 기질 영역 모두에서 Integrin 신호의 활성화와 ECM–세포 결합의 증대가 확인된 바 있어 암 진행 과정에서 상피 영역과 기질 영역 간 상호작용이 병리 형성에 핵심적으로 기여함을 재확인하는 결과라고 할 수 있음.
 - PanCK+ 영역에서는 Wnt 및 ErbB 신호 경로가 강화되어 있었으며 이는 선행 연구 결과 [7]에서 보고된 상피 영역 특이적 성장 인자 기반 발현 패턴과 부합했음. 반면 Vimentin+ 영역은 케모카인 신호 경로와 대식세포 관련 면역 반응이 두드러지게 나타났으며 이는 기질 면역활성 및 섬유아세포 활성화가 병존하는 선행 연구 결과 [7]의 서술 내용과 일치함.
 
-<img src="https://github.com/user-attachments/assets/6993e8ea-9632-4bcb-b091-a391acede8fc" width="600">
+<img src="https://github.com/user-attachments/assets/1b17aa4d-2adb-4fb8-ac52-61b56555d93b" width="600">
 
 ---
 
