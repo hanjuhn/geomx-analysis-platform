@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # 또는 master
+  workflow_dispatch:  # 수동으로 트리거 가능하도록 추가
 
 jobs:
   build-and-deploy:
@@ -32,6 +33,15 @@ jobs:
         run: npm run build:gh-pages
         env:
           GITHUB_PAGES: 'true'
+      
+      - name: Verify build output
+        run: |
+          echo "=== Build output verification ==="
+          ls -la dist/
+          echo "=== index.html content ==="
+          cat dist/index.html
+          echo "=== .nojekyll file ==="
+          test -f dist/.nojekyll && echo "✓ .nojekyll exists" || echo "✗ .nojekyll missing"
       
       - name: Add .nojekyll file
         run: touch dist/.nojekyll
