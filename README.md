@@ -21,6 +21,8 @@
 
 ### 데이터 분석 과정
 
+- ROI Quality Control은 관심 영역인 ROI가 신뢰할 수 있는 발현 데이터를 가지고 있는지를 검증함.
+- Gene Quality Control은 저발현 또는 비특이적 발현을 보이는 유전자를 제거함.
 - 정규화는 ROI의 총 발현값을 기준으로 스케일을 보정한 후 로그 변환을 적용하여 logCPM 값을 계산함.
 - 차원 축소는 주성분 분석 [5]을 활용하여 정규화된 유전자 발현 데이터를 저차원 공간으로 변환하여 그룹 간 패턴과 유사성을 시각적으로 탐색함.
 - 차등 발현 유전자 선정은 발현이 유의하게 증가하거나 감소한 유전자를 탐색함. 정규화된 데이터를 사용해 |log₂ Fold Change| > 1과 FDR < 0.05 조건을 동시에 만족하는 유전자를 통계적으로 유의한 차등 발현 유전자로 선정함.
@@ -43,7 +45,7 @@
 - 차원 축소 결과의 경우 저차원 공간에서의 분포 형태 및 군집 양상이 선행 연구 결과 [7]와 동일하게 재현됨.
 - 차등 발현 유전자 분석에서도 높은 수준의 일관성이 확인됨. 선행 연구 결과 [7]에서 보고된 상위 20개의 차등 발현 유전자 중 17개가 동일하게 선정되었으며 Volcano Plot에서의 분포 패턴 역시 매우 유사하게 나타남.
 
-<img src="https://github.com/user-attachments/assets/b00735bc-fed5-4676-bd54-7643ddc68ea3" width="700">
+<img src="https://github.com/user-attachments/assets/b00735bc-fed5-4676-bd54-7643ddc68ea3" width="600">
 
 ### ORA 기반 Pathway Enrichment 분석 결과
 
@@ -51,7 +53,7 @@
 - PanCK+ 영역에서는 Alpha 6 Beta 4 Integrin Signaling 및 Focal Adhesion이 두드러졌으며 Vimentin+ 영역에서도 Focal Adhesion이 유의하게 강화되어 있었음. 선행 연구 결과 [7]에서도 상피 영역과 기질 영역 모두에서 Integrin 신호의 활성화와 ECM–세포 결합의 증대가 확인된 바 있어 암 진행 과정에서 상피 영역과 기질 영역 간 상호작용이 병리 형성에 핵심적으로 기여함을 재확인하는 결과라고 할 수 있음.
 - PanCK+ 영역에서는 Wnt 및 ErbB 신호 경로가 강화되어 있었으며 이는 선행 연구 결과 [7]에서 보고된 상피 영역 특이적 성장 인자 기반 발현 패턴과 부합했음. 반면 Vimentin+ 영역은 케모카인 신호 경로와 대식세포 관련 면역 반응이 두드러지게 나타났으며 이는 기질 면역활성 및 섬유아세포 활성화가 병존하는 선행 연구 결과 [7]의 서술 내용과 일치함.
 
-<img src="https://github.com/user-attachments/assets/6993e8ea-9632-4bcb-b091-a391acede8fc" width="700">
+<img src="https://github.com/user-attachments/assets/6993e8ea-9632-4bcb-b091-a391acede8fc" width="600">
 
 ---
 
