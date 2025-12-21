@@ -57,7 +57,7 @@
 - PanCK+ 영역에서는 Alpha 6 Beta 4 Integrin Signaling 및 Focal Adhesion이 두드러졌으며 Vimentin+ 영역에서도 Focal Adhesion이 유의하게 강화되어 있었음. 선행 연구 결과 [7]에서도 상피 영역과 기질 영역 모두에서 Integrin 신호의 활성화와 ECM–세포 결합의 증대가 확인된 바 있어 암 진행 과정에서 상피 영역과 기질 영역 간 상호작용이 병리 형성에 핵심적으로 기여함을 재확인하는 결과라고 할 수 있음.
 - PanCK+ 영역에서는 Wnt 및 ErbB 신호 경로가 강화되어 있었으며 이는 선행 연구 결과 [7]에서 보고된 상피 영역 특이적 성장 인자 기반 발현 패턴과 부합했음. 반면 Vimentin+ 영역은 케모카인 신호 경로와 대식세포 관련 면역 반응이 두드러지게 나타났으며 이는 기질 면역활성 및 섬유아세포 활성화가 병존하는 선행 연구 결과 [7]의 서술 내용과 일치함.
 
-<img src="https://github.com/user-attachments/assets/1b17aa4d-2adb-4fb8-ac52-61b56555d93b" width="600">
+<img src="https://github.com/user-attachments/assets/07b0a3ec-45cc-423a-869f-845babe60f50" width="600">
 
 ---
 
